@@ -122,6 +122,7 @@ class ExecutorAgent:
             "audio.analyze": '{"tool": "audio.analyze", "args": {"url": "https://cdn.suno.ai/track.mp3"}}',
             "file.write": '{"tool": "file.write", "args": {"path": "out.txt", "content": "..."}}',
             "file.read": '{"tool": "file.read", "args": {"path": "file.txt"}}',
+            "autoagent.run_browser_task": '{"tool": "autoagent.run_browser_task", "args": {"goal": "describe the full task here", "max_iters": 20, "headless": true}}',
         }
         tools_str = "\n".join(f"  {t}: {tools_examples.get(t, '{...}')}" for t in available_tools)
 
