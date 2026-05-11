@@ -40,7 +40,8 @@ async def _emit(event_bus: Optional[EventBus], event_type: str, payload: Dict[st
 
 
 async def run_browser_task(
-    goal: str,
+    goal: Optional[str] = None,
+    task: Optional[str] = None,
     max_iters: int = 20,
     headless: bool = True,
     allowed_domains: Optional[List[str]] = None,
@@ -48,6 +49,10 @@ async def run_browser_task(
     _context: Optional[Dict[str, Any]] = None,
     **_kwargs: Any,
 ) -> Dict[str, Any]:
+    goal = goal or task  # LLM may pass 'task=' instead of 'goal='
+    if not goal:
+        return {"error": "goal is required"}
+
     """
     Delegate a multi-step browser task to RPBOT-AutoAgent.
 
