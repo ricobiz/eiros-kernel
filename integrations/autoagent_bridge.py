@@ -154,6 +154,7 @@ class AutoAgentBridge:
         Raises AutoAgentBridgeError on timeout.
         """
         elapsed = 0.0
+        status_doc: Dict[str, Any] = {}
         while elapsed < timeout:
             try:
                 status_doc = await self.get_status(task_id)
