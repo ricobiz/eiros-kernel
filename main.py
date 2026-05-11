@@ -34,6 +34,7 @@ from tools.browser import (
     browser_open_url, browser_screenshot, browser_type,
 )
 from tools.files import file_read, file_write
+from tools.autoagent import run_browser_task as autoagent_run_browser_task
 from tools.registry import ToolRegistry
 from api.routes import build_router
 
@@ -62,6 +63,7 @@ tools.register("browser.type", browser_type)
 tools.register("browser.screenshot", browser_screenshot)
 tools.register("browser.dom_snapshot", browser_dom_snapshot)
 tools.register("browser.close", browser_close)
+tools.register("autoagent.run_browser_task", autoagent_run_browser_task)
 
 
 # ==================== LIFESPAN ====================

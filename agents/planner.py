@@ -31,6 +31,10 @@ Rules:
 - success_criteria must be checkable, not just "task completed"
 - required_tools = tools that MUST be called for task to be considered done
 - risk=high if task involves irreversible external actions
+- For SIMPLE web tasks (open URL + screenshot, 1-2 steps): use browser.open_url + browser.screenshot
+- For COMPLEX web tasks (login, form fill, search+verify, captcha, multi-page navigation,
+  any task where exact click sequence is unknown): use autoagent.run_browser_task INSTEAD of
+  individual browser.* tools. autoagent handles the full interaction autonomously.
 """
 
 
@@ -105,7 +109,31 @@ class PlannerAgent:
 
     def _mock_plan(self, task: Task, available_tools: list) -> PlannerOutput:
         goal = task.goal.lower()
-        if any(k in goal for k in ["browser", "сайт", "http", "open", "navigate", "url"]):
+        _complex_keywords = (
+            "login", "войди", "sign in", "авторизуй", "заполни", "fill",
+            "submit", "отправь", "register", "sign up", "captcha", "капча",
+            "search", "найди", "find", "download", "скачай", "form",
+        )
+        _is_complex_browser = any(k in goal for k in _complex_keywords)
+        _is_browser = any(k in goal for k in ["browser", "сайт", "http", "open", "navigate", "url"])
+
+        if _is_browser and _is_complex_browser and "autoagent.run_browser_task" in available_tools:
+            return PlannerOutput(
+                plan=[
+                    "Delegate full browser interaction to autoagent.run_browser_task",
+                    "Verify returned summary and final_url meet success criteria",
+                ],
+                result_contract=TaskResultContract(
+                    success_criteria=["autoagent completed", "summary returned"],
+                    required_tools=["autoagent.run_browser_task"],
+                    forbidden_tools=[],
+                    max_steps=3,
+                    timeout_seconds=300,
+                ),
+                risk="medium",
+                rationale="Complex browser task — delegated to AutoAgent executor.",
+            )
+        if _is_browser:
             return PlannerOutput(
                 plan=[
                     "Open target URL with browser.open_url",
@@ -121,7 +149,7 @@ class PlannerAgent:
                     timeout_seconds=60,
                 ),
                 risk="low",
-                rationale="Browser task — open, snapshot, screenshot, close.",
+                rationale="Simple browser task — open, snapshot, screenshot, close.",
             )
         return PlannerOutput(
             plan=["Analyze goal and respond"],

@@ -22,7 +22,7 @@ class ToolRegistry:
         try:
             fn = self.tools[tool_name]
             args = action.get("args", {})
-            if tool_name.startswith("browser."):
+            if tool_name.startswith("browser.") or tool_name.startswith("autoagent."):
                 result = await fn(**args, event_bus=self.event_bus, _context=context)
             else:
                 result = await fn(**args)
