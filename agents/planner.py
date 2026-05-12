@@ -31,10 +31,13 @@ Rules:
 - success_criteria must be checkable, not just "task completed"
 - required_tools = tools that MUST be called for task to be considered done
 - risk=high if task involves irreversible external actions
-- For SIMPLE web tasks (open URL + screenshot, 1-2 steps): use browser.open_url + browser.screenshot
-- For COMPLEX web tasks (login, form fill, search+verify, captcha, multi-page navigation,
-  any task where exact click sequence is unknown): use autoagent.run_browser_task INSTEAD of
-  individual browser.* tools. autoagent handles the full interaction autonomously.
+- TOOL SELECTION (strictly follow this):
+  * If autoagent.run_browser_task is available AND the task involves any web interaction
+    beyond a single URL open → use autoagent.run_browser_task as the ONLY browser tool.
+    Plan = single step: "Use autoagent.run_browser_task to <goal description>"
+    Do NOT add browser.create_session / browser.navigate / browser.dom_snapshot before or after.
+  * Only use browser.open_url + browser.screenshot for trivial screenshot-only tasks
+    where NO interaction or content extraction is needed.
 """
 
 
